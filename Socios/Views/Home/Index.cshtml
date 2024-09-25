@@ -1,0 +1,505 @@
+﻿@model IndexViewModel
+<div class="row">
+    <div class="card text-center align-self-center shadow-lg p-3 mb-5 bg-body-tertiary rounded col-md-7 col-sm-12">
+        <div class="card-body" id="content">
+            <h3>Asociados</h3>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                data-bs-target="#AddAsoModal">Agregar</button>
+            <div id="contentASO">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Apellido</th>
+                            <th scope="col">Salario</th>
+                            <th scope="col">Dto</th>
+                            <th scope="col">acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var a in @Model.asociados)
+                        {
+                            <tr>
+                                <th scope="row">@a.IdAsociado</th>
+                                <td>@a.Nombre</td>
+                                <td>@a.Apellido</td>
+                                <td>@a.Salario</td>
+                                <td>@a.NombreDepartamento</td>
+                                <td>                                    
+                                    <button type="button" class="btn btn-warning"
+                                        onclick="GetAso(@a.IdAsociado)" data-id="@a.IdAsociado"
+                                        class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editAsoModal">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger"  onclick="deleteAso(@a.IdAsociado)"
+                                        data-id="@a.IdAsociado">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="card text-center  align-self-center shadow-lg p-3 mb-5 bg-body-tertiary rounded col-md-5 col-sm-12">
+        <div class="card-body" id="content2">
+            <h3>Departamentos</h3>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                data-bs-target="#AddDtoModal">Agregar</button>
+            
+            <div id="contentDto">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var d in @Model.departamentos)
+                        {
+                            <tr>
+                                <th scope="row">@d.IdDepartamento</th>
+                                <td>@d.Nombre</td>
+                                <td>
+
+                                    <button type="button" onclick="editDto(@d.IdDepartamento)" data-id="@d.IdDepartamento"
+                                        class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editDtoModal">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                    <button type="button" onclick="editSalarioDto(@d.IdDepartamento)" data-id="@d.IdDepartamento"
+                                        class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editSalarioDtoModal">
+                                        <i class="bi bi-currency-dollar"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger" onclick="deleteDto(@d.IdDepartamento)"
+                                        data-id="@d.IdDepartamento">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="editAsoModal" tabindex="-1" aria-labelledby="editAsoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAsoModalLabel">Editar Asociado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="floating-label ">
+                    <input class="floating-input" type="text" placeholder=" " id="nombreAsoEdit">
+                    <span class="highlight"></span>
+                    <label>Nombre</label>
+                </div>
+                <div class="floating-label ">
+                    <input class="floating-input" type="text" placeholder=" " id="ApellidoEdit">
+                    <span class="highlight"></span>
+                    <label>Apellidos</label>
+                </div>
+                <div class="floating-label ">
+                    <input class="floating-input" type="number" placeholder=" " id="salarioAsoEdit">
+                    <span class="highlight"></span>
+                    <label>Salario</label>
+                </div>
+                <div class="floating-label mb-4 contentSelect" >
+                    <select class="floating-select" id="departamentoAsoEdit" asp-items="Model.DepartamentosSelect"> 
+                        
+                    </select>
+                    <span class="highlight"></span>
+                    <label>Departamento</label>
+                    
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-bs-dismiss="modal" id="btnUpdateAso" class="btn btn-primary">Realizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="AddAsoModal" tabindex="-1" aria-labelledby="AddAsoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="AddAsoModalLabel">Agregar Asociado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="floating-label ">
+                    <input class="floating-input" type="text" placeholder=" " id="nombreAso">
+                    <span class="highlight"></span>
+                    <label>Nombre</label>
+                </div>
+                <div class="floating-label ">
+                    <input class="floating-input" type="text" placeholder=" " id="Apellido">
+                    <span class="highlight"></span>
+                    <label>Apellidos</label>
+                </div>
+                <div class="floating-label ">
+                    <input class="floating-input" type="number" placeholder=" " id="salarioAso">
+                    <span class="highlight"></span>
+                    <label>Salario</label>
+                </div>
+                <div class="floating-label mb-4 contentSelectAdd">
+                    <select class="floating-select" id="departamentoAso" asp-items="Model.DepartamentosSelect"> 
+                        
+                    </select>
+                    <span class="highlight"></span>
+                    <label>Tipo de usuario</label>
+                    
+                </div>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" data-bs-dismiss="modal" id="btnAddAso" class="btn btn-primary">Realizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="AddDtoModal" tabindex="-1" aria-labelledby="AddDtoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="AddDtoModalLabel">Agregar departamento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="floating-label ">
+                    <input class="floating-input" type="text" placeholder=" " id="nombreDto">
+                    <span class="highlight"></span>
+                    <label>Nombre Departamento</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" data-bs-dismiss="modal" id="btnAddDto" class="btn btn-primary">Realizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="editDtoModal" tabindex="-1" aria-labelledby="editDtoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editDtoModalLabel">Editar departamento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="floating-label ">
+                    <input class="floating-input" type="text" placeholder=" " id="nombreEditDto">
+                    <span class="highlight"></span>
+                    <label>Nombre Departamento</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-bs-dismiss="modal" id="btnUpdateDto"
+                    class="btn btn-primary">Realizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="editSalarioDtoModal" tabindex="-1" aria-labelledby="editSalarioDtoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editSalarioDtoModalLabel">Editar Salario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="floating-label ">
+                    <input class="floating-input" type="number" placeholder=" " id="porcentajeEdit">
+                    <span class="highlight"></span>
+                    <label>Porcentaje a modificar</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-bs-dismiss="modal" id="btnUpdateSalarioDto"
+                    class="btn btn-primary">Realizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        $("#btnAddDto").on("click", function () {
+            if ($('#nombreDto').val() !== "") {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("AddDto", "Home")',
+                    data: { "Nombre": $('#nombreDto').val() },
+                    success: function (result) {
+
+                        $("#contentDto").empty();
+                        $("#contentDto").append(result);
+                        UpdateAso();
+                        UpdateSelect();
+                    },
+                    error: function (result) {
+
+                        console.log(result);
+                    }
+                });
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Ingrese los datos'
+                })
+            }
+
+        });
+        function UpdateAso() {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("UpdateTabelAso", "Home")',             
+                success: function (result) {
+
+                    $("#contentASO").empty();
+                    $("#contentASO").append(result);
+                },
+                error: function (result) {
+
+                    console.log(result);
+                }
+            });
+        }
+        function UpdateSelect() {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("UpdateSelectAso", "Home")',             
+                success: function (result) {
+
+                    $(".contentSelect").empty();
+                    $(".contentSelect").append(result);
+                },
+                error: function (result) {
+
+                    console.log(result);
+                }
+            });
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("UpdateSelectAsoAdd", "Home")',             
+                success: function (result) {
+
+                    $(".contentSelectAdd").empty();
+                    $(".contentSelectAdd").append(result);
+                },
+                error: function (result) {
+                    console.log(result);
+                }
+            });
+        }
+
+        $("#btnAddAso").on("click", function () {
+            if ( $('#nombreAso').val() !== "" && $('#Apellido').val() !== "" && $('#salarioAso').val() !== "")  {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("AddAso", "Home")',
+                    data: {
+                        "Nombre": $('#nombreAso').val(),
+                        "Apellido": $('#Apellido').val(),
+                        "Salario": $('#salarioAso').val(),
+                        "DepartamentoId" :$('#departamentoAso').val()
+                    },
+                    success: function (result) {
+
+                        $("#contentASO").empty();
+                        $("#contentASO").append(result);
+                    },
+                    error: function (result) {
+
+                        console.log(result);
+                    }
+                });
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Ingrese los datos'
+                })
+            }
+        });
+        
+        $("#btnUpdateSalarioDto").on("click", function () {
+            let dataId = $(this).attr("data-id");
+            if ( $('#porcentajeEdit').val() !== "")  {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("EditSalarioDto", "Home")',
+                    data: {
+                        "id": dataId,
+                        "porcentaje": $('#porcentajeEdit').val()                        
+                    },
+                    success: function (result) {
+                        console.log(result);                        
+                        UpdateAso();
+                    }
+                });
+            }
+        });
+
+        $("#btnUpdateAso").on("click", function () {
+            let dataId = $(this).attr("data-id");
+            if ( $('#nombreAsoEdit').val() !== "" && $('#ApellidoEdit').val() !== "" && $('#salarioAsoEdit').val() !== "")  {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("EditAso", "Home")',
+                    data: {
+                        "IdAsociado": dataId,
+                        "Nombre": $('#nombreAsoEdit').val(),
+                        "Apellido": $('#ApellidoEdit').val(),
+                        "Salario": $('#salarioAsoEdit').val(),
+                        "DepartamentoId" : $('#departamentoAsoEdit').val()
+                    },
+                    success: function (result) {
+                        console.log(result);
+                        $("#contentASO").empty();
+                        $("#contentASO").append(result);
+                        //UpdateAso();
+                    }
+                });
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Ingrese los datos'
+                })
+            }
+        });
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 6000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+        function Success() {
+            Toast.fire({
+                icon: 'success',
+                title: 'Operación correcta'
+            })
+        }
+        function deleteDto(id) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("DeleteDto", "Home")',
+                data: { "id": id },
+                success: function (result) {
+
+                    $("#contentDto").empty();
+                    $("#contentDto").append(result);
+                    UpdateAso();
+                    UpdateSelect();
+                },
+                error: function (result) {
+
+                    console.log(result);
+                }
+            });
+        }
+        function deleteAso(id) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("DeleteAso", "Home")',
+                data: { "id": id },
+                success: function (result) {
+                    $("#contentASO").empty();
+                    $("#contentASO").append(result);                    
+                },
+                error: function (result) {
+
+                    console.log(result);
+                }
+            });
+        }
+        function editSalarioDto (id){
+            $('#btnUpdateSalarioDto').attr('data-id', id)
+        }
+        function editDto(id) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetDto", "Home")',
+                data: { "id": id },
+                success: function (result) {
+                    console.log(result);
+                    $('#nombreEditDto').val(result.nombre);
+                    $('#btnUpdateDto').attr('data-id', result.idDepartamento)
+
+                },
+                error: function (result) {
+
+                    console.log(result);
+                }
+            });
+        }
+        function GetAso(id) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetAso", "Home")',
+                data: { "id": id },
+                success: function (result) {
+                    console.log(result);
+                    $('#nombreAsoEdit').val(result.nombre);
+                    $('#ApellidoEdit').val(result.apellido);
+                    $('#salarioAsoEdit').val(result.salario);
+                    $('#btnUpdateAso').attr('data-id', result.idAsociado);             
+                    $('#departamentoAsoEdit option[value='+result.departamentoId+']').attr('selected','selected');
+                },
+                error: function (result) {
+                    console.log(result);
+                }
+            });
+        }
+
+        $("#btnUpdateDto").on("click", function () {
+            let dataId = $(this).attr("data-id");
+            if ($('#nombreEditDto').val() !== "") {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("EditDto", "Home")',
+                    data: {
+                        "IdDepartamento": dataId,
+                        "Nombre": $('#nombreEditDto').val()
+                    },
+                    success: function (result) {
+                        console.log(result);
+                        $("#contentDto").empty();
+                        $("#contentDto").append(result);
+                        UpdateAso();
+                        UpdateSelect();
+                    },
+                    error: function (result) {
+
+                        console.log(result);
+                    }
+                });
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Ingrese los datos'
+                })
+            }
+        });
+
+        
+    </script>
+}
